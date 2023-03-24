@@ -1,12 +1,7 @@
 from jnius import autoclass
-from kivy.clock import Clock
-from kivy.core.audio import SoundLoader
-from nba_api.live.nba.endpoints import scoreboard
-from datetime import datetime, timedelta
 
 PythonService = autoclass('org.kivy.android.PythonService')
 PythonService.mService.setAutoRestartService(True)
-
 
 from nba_api.live.nba.endpoints import scoreboard
 from datetime import datetime, timezone, timedelta
