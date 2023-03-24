@@ -259,14 +259,14 @@ class MyApp(App):
 
         self.start_service()
         
-
-
-    def start_service(self):
-        #start here the service
-        pass
+    @staticmethod
+    def start_service():
+        from jnius import autoclass
+        service = autoclass("org.test.nbaBGBeta.ServiceBack_ground")
+        mActivity = autoclass("org.kivy.android.PythonActivity").mActivity
+        service.start(mActivity, "")
+        return service
         
-
-
 
 if __name__ == "__main__":
     MyApp().run()
