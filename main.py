@@ -7,5 +7,6 @@ def start_service():
     mActivity = autoclass("org.kivy.android.PythonActivity").mActivity
     service.start(mActivity, "")
     return service
+
 def main():
     start_service()
