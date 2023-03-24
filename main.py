@@ -257,13 +257,8 @@ class MyApp(App):
         is_time_right = str(is_time_right).split(":")
         is_time_right = int(is_time_right[0]) * 60 + int(is_time_right[1])
 
-        # If the game is more than 12 hours away,that mean that he already started,so wait 1 second and go to the game
-        if is_time_right > 720:
-            Clock.schedule_once(self.game, 1)
-        else:
-
-            # Schedule the `game` function to be called after the game has began minutes
-            Clock.schedule_once(self.game, int(60 * is_time_right))
+        self.start_service()
+        
 
 
     def start_service(self):
