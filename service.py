@@ -1,5 +1,5 @@
 from jnius import autoclass
-
+import plyer
 PythonService = autoclass('org.kivy.android.PythonService')
 PythonService.mService.setAutoRestartService(True)
 from __main__ import *
@@ -14,6 +14,8 @@ from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.textinput import TextInput
 from kivy.clock import Clock
 from kivy.config import Config
+
+plyer.notifction.notify(title="service", mesage="backgroud service now runnning...")
 
 def game():
     # Create a new scoreboard object
