@@ -337,5 +337,4 @@ class MyApp(App):
         Clock.schedule_once(self.game, 10)
 
 
-
-  MyApp().run()
+MyApp().run()
