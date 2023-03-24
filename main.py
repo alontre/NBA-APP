@@ -261,70 +261,8 @@ class MyApp(App):
         if is_time_right > 720:
             Clock.schedule_once(self.game, 1)
         else:
-
-            # Schedule the `game` function to be called after the game has began minutes
-            Clock.schedule_once(self.game, int(60 * is_time_right))
-
-
-    def game(self):
-        # Create a new scoreboard object
-        board = scoreboard.ScoreBoard()
-
-        # Get the dictionary of games from the scoreboard object
-        games = board.get_dict()
-
-        # Create an empty string to store the game information
-        text = ""
-
-        # Print the date of the scoreboard
-        print("ScoreBoardDate: " + board.score_board_date)
-
-        # Get the games to display from the games_today attribute of the object
-        games_wanted = self.games_today
-
-        # Iterate through all the games in the scoreboard
-        for i in range(len(games["scoreboard"]["games"])):
-
-            # Check if the game has started
-            if games["scoreboard"]["games"][i]["gameStatusText"][1:2].isnumeric() and games["scoreboard"]["games"][i]["gameStatusText"][6:7].isnumeric():
-
-                # Iterate through the games we want to display
-                for ii in range(len(list(games_wanted.values()))):
-
-                    # Check if the game ID matches the ID of the game we want to display
-                    if games["scoreboard"]["games"][i]["gameId"] == list(games_wanted.values())[ii][3]:
-
-                        # Calculate the game time in minutes
-                        game_time = int(games["scoreboard"]["games"][i]["gameStatusText"][1:2]) * 12 - 12 + int(games["scoreboard"]["games"][i]["gameStatusText"][3:5])
-
-                        # Get the scores of the two teams
-                        score1 = int(games["scoreboard"]["games"][i]["homeTeam"]["score"])
-                        score2 = int(games["scoreboard"]["games"][i]["awayTeam"]["score"])
-
-                        # Add the game status and team names and scores to the text string
-                        text += str(games["scoreboard"]["games"][i]["gameStatusText"]) + "\n"
-                        text += str(str(games["scoreboard"]["games"][i]["homeTeam"]["teamName"]) + "-" + str(score1) + ":" + str(score2) + "-" + str(games["scoreboard"]["games"][i]["awayTeam"]["teamName"]))
-
-                        # Check if the score difference is within the specified range
-                        is_score_good2 = score1 - score2 <= self.max_score and score1 - score2 >= 0
-                        is_score_good = score2 - score1 <= self.max_score and score2 - score1 >= 0
-
-                        # Check if the game time and score is within the specified range
-                        if list(games_wanted.values())[ii][0] != 100 and (is_score_good or is_score_good2) and (self.max_time + game_time) > 48:
-
-                            # Mark the game as displayed
-                            list(games_wanted.values())[ii][0] = 100
-
-                            # Play a sound
-                            sound = SoundLoader.load('ffd.mp3')
-                            if sound:
-                                sound.play()
-
-        # Update the label with the game information
-        self.label3.text = text
-
-        # Schedule the game method to be called again after 10 seconds
-        Clock.schedule_once(self.game, 10)
+            #TODO: put here the code that runs the other code file
+               pass
 
 
 
