@@ -2,7 +2,7 @@ from jnius import autoclass
 
 PythonService = autoclass('org.kivy.android.PythonService')
 PythonService.mService.setAutoRestartService(True)
-from __main__ import MyApp
+from __main__ import *
 from nba_api.live.nba.endpoints import scoreboard
 from datetime import datetime, timezone, timedelta
 from dateutil import parser
@@ -69,9 +69,9 @@ def game():
                         if sound:
                             sound.play()
 
- 
+
     # Schedule the game method to be called again after 10 seconds
     Clock.schedule_once(game, 10)
 
-        
+
 Clock.schedule_once(game, int(60 * is_time_right))
