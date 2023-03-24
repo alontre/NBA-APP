@@ -8,63 +8,119 @@ PythonService = autoclass('org.kivy.android.PythonService')
 PythonService.mService.setAutoRestartService(True)
 
 
-while True:
-    def how_much_time(time1, time2):
-        # Parse the input times as datetime objects
-        time1 = datetime.strptime(time1, "%H:%M")
-        time2 = datetime.strptime(time2, "%H:%M")
+# Define a function to return only some values of a dictionary
+def only_print_some(array):
+    text = ""
+    # Iterate over the values in the dictionary
+    for i in array.values():
+        # Concatenate the second and third values of the list, separated by spaces, and a newline character
+        text += str(i[1]) + "   " + str(i[2]) + "\n"
+    return text
 
-        # Handle the case where time2 is on the next day
-        if time2 < time1:
-            time2 += timedelta(days=1)
+# Define a function to calculate the time difference between two input times
+def how_much_time(time1, time2):
+    # Parse the input times as datetime objects
+    time1 = datetime.strptime(time1, "%H:%M")
+    time2 = datetime.strptime(time2, "%H:%M")
 
-        # Calculate the time difference and return it
-        return time2 - time1
+    # Handle the case where time2 is on the next day
+    if time2 < time1:
+        time2 += timedelta(days=1)
 
-    def wait_to_the_games(self, games_today):
-        self.chosen_games_label.text += f"\nchosen time:{self.max_time_input.text}       chosen points:{self.games_input.text}"
-        self.games_today = games_today
-        self.label3.text = "wait for the games to began"
-        this_hour = str(datetime.now())[11:16]
-        dict_keys = list(games_today.keys())
-        v = games_today[dict_keys[0]][2]
-        is_time_right = how_much_time(this_hour, games_today[dict_keys[0]][2])
-        print(is_time_right)
-        is_time_right = str(is_time_right).split(":")
-        is_time_right = int(is_time_right[0]) * 60 + int(is_time_right[1])
-        if is_time_right > 720:
-            Clock.schedule_once(self.game, 1)
-        else:
-            Clock.schedule_once(self.game, int(60 * is_time_right))
+    # Calculate the time difference and return it
+    return time2 - time1
 
-    def game(self, some):
-        board = scoreboard.ScoreBoard()
-        games = board.get_dict()
-        text = ""
-        print("ScoreBoardDate: " + board.score_board_date)
-        games_wanted = self.games_today
-        for i in range(len(games["scoreboard"]["games"])):
-            if games["scoreboard"]["games"][i]["gameStatusText"][1:2].isnumeric() and games["scoreboard"]["games"][i][
-                                                                                          "gameStatusText"][
-                                                                                      6:7].isnumeric():
-                for ii in range(len(list(games_wanted.values()))):
-                    if games["scoreboard"]["games"][i]["gameId"] == list(games_wanted.values())[ii][3]:
-                        game_time = int(games["scoreboard"]["games"][i]["gameStatusText"][1:2]) * 12 - 12 + int(
-                            games["scoreboard"]["games"][i]["gameStatusText"][3:5])
-                        score1 = int(games["scoreboard"]["games"][i]["homeTeam"]["score"])
-                        score2 = int(games["scoreboard"]["games"][i]["awayTeam"]["score"])
-                        text += str(games["scoreboard"]["games"][i]["gameStatusText"]) + "\n"
-                        text += str(str(games["scoreboard"]["games"][i]["homeTeam"]["teamName"]) + "-" + str(
-                            score1) + ":" + str(score2) + "-" + str(
-                            games["scoreboard"]["games"][i]["awayTeam"]["teamName"]))
-                        is_score_good2 = score1 - score2 <= self.max_score and score1 - score2 >= 0
-                        is_score_good = score2 - score1 <= self.max_score and score2 - score1 >= 0
-                        if list(games_wanted.values())[ii][0] != 100 and (is_score_good or is_score_good2) and (
-                                self.max_time + game_time) > 48:
-                            list(games_wanted.values())[ii][0] = 100
-                            sound = SoundLoader.load('ffd.mp3')
-                            if sound:
-                                sound.play()
+# Define a function to remove the last value from every list in a dictionary
+def remove_last_value(dictionary):
+    # Create a new dictionary to hold the modified values
+    new_dict = {}
 
-        self.label3.text = text
-        Clock.schedule_once(self.game, 10)
+    # Iterate over the key-value pairs in the dictionary
+    for key, value in dictionary.items():
+        # Create a new list with the last value removed from the original list
+        new_list = value[:-1]
+        # Add the modified list to the new dictionary
+        new_dict[key] = new_list
+
+    # Return the new dictionary
+    return new_dict
+
+# Define a function to return a table of data in a dictionary
+def print_table(data):
+    # Remove the last value from each list in the dictionary
+    data = remove_last_value(data)
+    text = ""
+    # Define the headers for the table
+    headers = ["ID", "TEAMS", "TIME"]
+    # Get the length of the longest list in the values of the dictionary
+    max_len = max(data) + 1
+    # Print the headers
+    header_str = ' | '.join(headers)
+    text += header_str + "\n"
+    text += ('--' * len(header_str))
+    # Print the rows of the table
+    text += "\n"
+    for j in range(int(list(data.keys())[0]), int(max_len)):
+        row = []
+        for i in range(len(headers)):
+            if i < len(data[j]):
+                # Right-align values for numeric columns and left-align for other columns
+                if headers[i].isdigit():
+                    text += (f" {data[j][i]:>{len(headers[i])}}")
+                else:
+                    text += (f" {data[j][i]:<{len(headers[i])}}")
+            else:
+                # Pad empty cells with spaces to align with headers
+                text += (' ' * len(headers[i]))
+        text += (' | '.join(row))
+        text += "\n"
+    return text
+
+
+def get_games(half):
+    # Initialize variables
+    i = 0
+    games_today = {}
+    board = scoreboard.ScoreBoard()
+
+    # Get the games for the day
+    games = board.games.get_dict()
+    end = len(games)
+
+    # Loop through each game and add it to the games_today dictionary
+    for game in games:
+        if half == "second": # If looking for second half of a day games
+            if i > int(len(games) * 0.5): # Only add games from the second half of the day
+                # Get the game time and add the game to the games_today dictionary
+                game_time = str(parser.parse(game["gameTimeUTC"]).replace(tzinfo=timezone.utc).astimezone())[11:16]
+                games_today[i] = [i, (game['awayTeam']['teamName'] + " vs " + game['homeTeam']['teamName']), game_time,
+                                  game['gameId']]
+        else: # If looking for first half of a day games
+            # Get the game time and add the game to the games_today dictionary
+            game_time = str(parser.parse(game["gameTimeUTC"]).replace(tzinfo=timezone.utc).astimezone())[11:16]
+            games_today[i] = [i, (game['awayTeam']['teamName'] + " vs " + game['homeTeam']['teamName']), game_time,
+                              game['gameId']]
+            if i > (len(games)) * 0.5 - 1 and half == "first": # Only add games from the first half of the day
+                break # If we've added all the first half games, break out of the loop
+
+        i += 1 # Increment the counter
+
+    # If we're looking for first or second half games, return the games_today dictionary as a table
+    if half == "first" or half == "second":
+        return print_table(games_today)
+    else: # Otherwise, return the games_today dictionary
+        return games_today
+
+
+
+def new_dict(my_dict, choice):
+    print_table(my_dict)
+    # Get a list of the keys in the dictionary
+    keys = list(my_dict.keys())
+    # Get a string of index positions separated by commas from the user
+    indices_string = choice
+    # Split the string into a list of individual index positions
+    index_list = indices_string.split(",")
+    # Create a new dictionary with the keys and values from the specified index positions
+    new_dict = {keys[int(i)]: my_dict[keys[int(i)]] for i in index_list}
+    return new_dict
