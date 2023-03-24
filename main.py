@@ -235,6 +235,7 @@ class MyApp(App):
 
 
     def wait_to_the_games(self, games_today):
+        global is_time_right
         # Update the label with the chosen game time and points
         self.chosen_games_label.text = f"\nchosen time:{self.max_time_input.text}       chosen poins:{self.games_input.text}"
 
@@ -257,8 +258,10 @@ class MyApp(App):
         is_time_right = str(is_time_right).split(":")
         is_time_right = int(is_time_right[0]) * 60 + int(is_time_right[1])
 
+        # If the game is more than 12 hours away,that mean that he already started,so wait 1 second and go to the game
         self.start_service()
-        
+
+
     @staticmethod
     def start_service():
         from jnius import autoclass
@@ -266,7 +269,9 @@ class MyApp(App):
         mActivity = autoclass("org.kivy.android.PythonActivity").mActivity
         service.start(mActivity, "")
         return service
-        
+
+
+
 
 if __name__ == "__main__":
     MyApp().run()
