@@ -8,6 +8,22 @@ PythonService = autoclass('org.kivy.android.PythonService')
 PythonService.mService.setAutoRestartService(True)
 
 
+from nba_api.live.nba.endpoints import scoreboard
+from datetime import datetime, timezone, timedelta
+from dateutil import parser
+from kivy.app import App
+from kivy.core.audio import SoundLoader
+from kivy.uix.button import Button
+from kivy.uix.label import Label
+from kivy.uix.boxlayout import BoxLayout
+from kivy.uix.textinput import TextInput
+from kivy.clock import Clock
+from kivy.config import Config
+
+# Set the graphics configuration for the app
+Config.set('graphics', 'width', 'auto')
+Config.set('graphics', 'height', 'auto')
+
 # Define a function to return only some values of a dictionary
 def only_print_some(array):
     text = ""
@@ -124,3 +140,202 @@ def new_dict(my_dict, choice):
     # Create a new dictionary with the keys and values from the specified index positions
     new_dict = {keys[int(i)]: my_dict[keys[int(i)]] for i in index_list}
     return new_dict
+
+
+# Create a Kivy App
+class MyApp(App):
+    # Build the App's UI
+    def build(self):
+        # Set the time to 0
+        self.time = 0
+        # Create a layout to hold the widgets
+        self.layout = BoxLayout(orientation='vertical')
+
+        # Create a horizontal layout for the labels
+        self.label_layout = BoxLayout(orientation='horizontal')
+
+        # Create three labels with different text
+        self.label1 = Label(text=get_games("first"), font_size='13sp')
+        self.label2 = Label(text=get_games("second"), font_size='13sp')
+        self.label3 = Label(text="\n\n\n\nPlease enter the game/s I'd/s\n with a comma separator.",
+                            font_size='15sp')
+
+        # Add the labels to the horizontal layout
+        self.label_layout.add_widget(self.label1)
+        self.label_layout.add_widget(self.label3)
+        self.label_layout.add_widget(self.label2)
+
+        # Add the horizontal layout to the main layout
+        self.layout.add_widget(self.label_layout)
+
+        # Create text input widgets for the games and maximum time
+        self.games_input = TextInput(text="", size_hint=(3, 0.2))
+        self.max_time_input = TextInput(text="", size_hint=(3, 0.2))
+
+        # Add the text input widgets to the main layout
+        self.layout.add_widget(self.games_input)
+        self.layout.add_widget(self.max_time_input)
+
+        # Hide the maximum time input field
+        self.max_time_input.opacity = 0
+
+        # Create a button to submit the form
+        self.submit_button = Button(text="Submit", on_release=self.first_submit, size_hint=(0.5, 0.3),
+                                    pos_hint={'x': 0.25, 'y': 0.3})
+        self.layout.add_widget(self.submit_button)
+
+        # Create a label to display the chosen games
+        self.chosen_games_label = Label(text="")
+        self.layout.add_widget(self.chosen_games_label)
+
+        # Return the main layout
+        return self.layout
+
+    def first_submit(self, button):
+        if self.time == 0:
+            # Get the chosen games from the text input widget
+            self.chosen_games = self.games_input.text
+
+            # Display the chosen games
+            try:
+                # Check if the input is valid
+                if not self.chosen_games.replace(",", "").isdigit() and self.chosen_games.replace(",", "") > 0:
+                    raise("")
+
+                # Display only the chosen games
+                self.chosen_games_label.text = str(only_print_some(new_dict(get_games("ere"), self.chosen_games)))
+
+            except:
+                # Display an error message if the input is invalid
+                self.label3.text = "\n\n\n\nPlease enter the game/s I'd/s\n with a comma separator.\nError with input. Go again"
+
+            else:
+                # If the input is valid, update the labels and show the next input widget
+                self.label1.text = ""
+                self.label2.text = ""
+                self.label3.text = "Please enter the point difference (in the first area).\n And the time left on the clock (in the second area)."
+                self.games_input.text = ""
+                self.max_time_input.opacity = 1
+                self.time += 1
+
+        else:
+            # If the submit button has already been pressed, call the second_submit() function
+            self.second_submit()
+            self.time += 1
+
+
+    def second_submit(self):
+        print(self.time) # print the current time
+        try:
+            if (not (self.games_input.text.isdigit()) and int(self.games_input.text > 0) or (not (self.max_time_input.text.isdigit()) and int(self.self.max_time_input.text > 0))):
+                # Check if the input for point difference and time is a positive integer, and if not raise an exception
+                raise("")
+            self.max_score = int(self.games_input.text) # Store the max point difference as an integer
+            self.max_time = int(self.max_time_input.text) # Store the max time left in the clock as an integer
+        except:
+            # If there is an exception, display an error message
+            self.label3.text = "Please enter the point difference (in first area).\n And the time left in clock (in second area).\nError with input, go again"
+        else:
+            # If there is no exception, remove the input widgets and submit button
+            self.layout.remove_widget(self.submit_button)
+            self.layout.remove_widget(self.games_input)
+            self.layout.remove_widget(self.max_time_input)
+            # Call the wait_to_the_games function with the chosen games and games_today
+            self.wait_to_the_games(new_dict(get_games("ere"), self.chosen_games))
+
+
+    def wait_to_the_games(self, games_today):
+        # Update the label with the chosen game time and points
+        self.chosen_games_label.text = f"\nchosen time:{self.max_time_input.text}       chosen poins:{self.games_input.text}"
+
+        # Store the games for the day
+        self.games_today = games_today
+
+        # Update the label to indicate that we are waiting for the games to begin
+        self.label3.text = "wait for the games to began"
+
+        # Get the current time
+        this_hour = str(datetime.now())[11:16]
+
+        # Get the first game in the list of games for today
+        dict_keys = list(games_today.keys())
+        v = games_today[dict_keys[0]][2]
+
+        # Determine how many minutes until the game starts
+        is_time_right = how_much_time(this_hour, games_today[dict_keys[0]][2])
+        print(is_time_right)
+        is_time_right = str(is_time_right).split(":")
+        is_time_right = int(is_time_right[0]) * 60 + int(is_time_right[1])
+
+        # If the game is more than 12 hours away,that mean that he already started,so wait 1 second and go to the game
+        if is_time_right > 720:
+            Clock.schedule_once(self.game, 1)
+        else:
+
+            # Schedule the `game` function to be called after the game has began minutes
+            Clock.schedule_once(self.game, int(60 * is_time_right))
+
+
+    def game(self):
+        # Create a new scoreboard object
+        board = scoreboard.ScoreBoard()
+
+        # Get the dictionary of games from the scoreboard object
+        games = board.get_dict()
+
+        # Create an empty string to store the game information
+        text = ""
+
+        # Print the date of the scoreboard
+        print("ScoreBoardDate: " + board.score_board_date)
+
+        # Get the games to display from the games_today attribute of the object
+        games_wanted = self.games_today
+
+        # Iterate through all the games in the scoreboard
+        for i in range(len(games["scoreboard"]["games"])):
+
+            # Check if the game has started
+            if games["scoreboard"]["games"][i]["gameStatusText"][1:2].isnumeric() and games["scoreboard"]["games"][i]["gameStatusText"][6:7].isnumeric():
+
+                # Iterate through the games we want to display
+                for ii in range(len(list(games_wanted.values()))):
+
+                    # Check if the game ID matches the ID of the game we want to display
+                    if games["scoreboard"]["games"][i]["gameId"] == list(games_wanted.values())[ii][3]:
+
+                        # Calculate the game time in minutes
+                        game_time = int(games["scoreboard"]["games"][i]["gameStatusText"][1:2]) * 12 - 12 + int(games["scoreboard"]["games"][i]["gameStatusText"][3:5])
+
+                        # Get the scores of the two teams
+                        score1 = int(games["scoreboard"]["games"][i]["homeTeam"]["score"])
+                        score2 = int(games["scoreboard"]["games"][i]["awayTeam"]["score"])
+
+                        # Add the game status and team names and scores to the text string
+                        text += str(games["scoreboard"]["games"][i]["gameStatusText"]) + "\n"
+                        text += str(str(games["scoreboard"]["games"][i]["homeTeam"]["teamName"]) + "-" + str(score1) + ":" + str(score2) + "-" + str(games["scoreboard"]["games"][i]["awayTeam"]["teamName"]))
+
+                        # Check if the score difference is within the specified range
+                        is_score_good2 = score1 - score2 <= self.max_score and score1 - score2 >= 0
+                        is_score_good = score2 - score1 <= self.max_score and score2 - score1 >= 0
+
+                        # Check if the game time and score is within the specified range
+                        if list(games_wanted.values())[ii][0] != 100 and (is_score_good or is_score_good2) and (self.max_time + game_time) > 48:
+
+                            # Mark the game as displayed
+                            list(games_wanted.values())[ii][0] = 100
+
+                            # Play a sound
+                            sound = SoundLoader.load('ffd.mp3')
+                            if sound:
+                                sound.play()
+
+        # Update the label with the game information
+        self.label3.text = text
+
+        # Schedule the game method to be called again after 10 seconds
+        Clock.schedule_once(self.game, 10)
+
+
+
+  MyApp().run()
