@@ -4,19 +4,8 @@ PythonService = autoclass('org.kivy.android.PythonService')
 PythonService.mService.setAutoRestartService(True)
 from __main__ import *
 from nba_api.live.nba.endpoints import scoreboard
-from datetime import datetime, timezone, timedelta
-from dateutil import parser
-from kivy.app import App
 from kivy.core.audio import SoundLoader
-from kivy.uix.button import Button
-from kivy.uix.label import Label
-from kivy.uix.boxlayout import BoxLayout
-from kivy.uix.textinput import TextInput
 from kivy.clock import Clock
-from kivy.config import Config
-
-plyer.notifction.notify(title="service", mesage="backgroud service now runnning...")
-
 def game():
     # Create a new scoreboard object
     board = scoreboard.ScoreBoard()
@@ -28,10 +17,8 @@ def game():
     text = ""
 
     # Print the date of the scoreboard
-    print("ScoreBoardDate: " + board.score_board_date)
-
     # Get the games to display from the games_today attribute of the object
-    games_wanted = MyApp.games_today
+    games_wanted = App.games_today
 
     # Iterate through all the games in the scoreboard
     for i in range(len(games["scoreboard"]["games"])):
@@ -57,8 +44,8 @@ def game():
                     text += str(str(games["scoreboard"]["games"][i]["homeTeam"]["teamName"]) + "-" + str(score1) + ":" + str(score2) + "-" + str(games["scoreboard"]["games"][i]["awayTeam"]["teamName"]))
 
                     # Check if the score difference is within the specified range
-                    is_score_good2 = score1 - score2 <= MyApp.max_score and score1 - score2 >= 0
-                    is_score_good = score2 - score1 <= MyApp.max_score and score2 - score1 >= 0
+                    is_score_good2 = score1 - score2 <= App.max_score and score1 - score2 >= 0
+                    is_score_good = score2 - score1 <= App.max_score and score2 - score1 >= 0
 
                     # Check if the game time and score is within the specified range
                     if list(games_wanted.values())[ii][0] != 100 and (is_score_good or is_score_good2) and (MyApp.max_time + game_time) > 48:
@@ -74,6 +61,5 @@ def game():
 
     # Schedule the game method to be called again after 10 seconds
     Clock.schedule_once(game, 10)
-
 
 Clock.schedule_once(game, int(60 * is_time_right))
