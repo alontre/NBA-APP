@@ -6,9 +6,6 @@ from kivy.uix.button import Button
 from kivy.uix.label import Label
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.textinput import TextInput
-from kivy.core.window import Window
-
-Window.size = (360, 600)
 
 # Define a function to return only some values of a dictionary
 def only_print_some(array):
@@ -113,7 +110,7 @@ def new_dict(my_dict, choice):
     keys = list(my_dict.keys())
     # Get a string of index positions separated by commas from the user
     indices_string = choice
-    # Split the string into a list of individual index positions
+    # Split the stringw into a list of individual index positions
     index_list = indices_string.split(",")
     # Create a new dictionary with the keys and values from the specified index positions
     new_dict = {keys[int(i)]: my_dict[keys[int(i)]] for i in index_list}
@@ -124,7 +121,7 @@ def new_dict(my_dict, choice):
 class NBA(App):
     # Build the App's UI
     def build(self):
-        self.icon = "nbaicon.png"
+        print(NBAS)
         # Set the time to 0
         self.time = 0
         # Create a layout to hold the widgets
@@ -175,6 +172,7 @@ class NBA(App):
         return self.layout
 
     def on_start(self):
+        global Z
         from kivy import platform
         if platform == "android":
             self.start_service()
@@ -238,7 +236,7 @@ class NBA(App):
 
 
     def wait_to_the_games(self, games_today):
-        global is_time_right
+        global is_time_right,needs
         # Update the label with the chosen game time and points
         self.chosen_games_label.text = f"\nchosen time:{self.max_time_input.text}\nchosen points:{self.games_input.text}"
 
@@ -268,10 +266,11 @@ class NBA(App):
     @staticmethod
     def start_service():
         from jnius import autoclass
-        service = autoclass("org.test.nbaBGBeta.ServiceBackground")
+        service = autoclass("org.test.service.ServiceBackground")
         mActivity = autoclass("org.kivy.android.PythonActivity").mActivity
         service.start(mActivity, "")
         return service
 
 if __name__ == "__main__":
-    NBA().run()
+    NBAS = NBA()
+    NBAS.run()
