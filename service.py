@@ -1,14 +1,15 @@
 from jnius import autoclass
-from __main__ import *
 from nba_api.live.nba.endpoints import scoreboard
 from kivy.core.audio import SoundLoader
 from time import sleep
-import plyer
+from main import *
 
 PythonService = autoclass('org.kivy.android.PythonService')
 PythonService.mService.setAutoRestartService(True)
 
-plyer.notification.notify(title="background", message="background service now running...")
+#def noti():
+#    import plyer
+#    plyer.notification.notify(title="background", message="background service now running...")
 
 def game():
     # Create a new scoreboard object
@@ -22,7 +23,7 @@ def game():
 
     # Print the date of the scoreboard
     # Get the games to display from the games_today attribute of the object
-    games_wanted = Nba.games_today
+    games_wanted = NBAS.games_today
 
     # Iterate through all the games in the scoreboard
     for i in range(len(games["scoreboard"]["games"])):
@@ -51,12 +52,12 @@ def game():
                                 str(score2) + "-" + str(games["scoreboard"]["games"][i]["awayTeam"]["teamName"]))
 
                     # Check if the score difference is within the specified range
-                    is_score_good2 = score1 - score2 <= Nba.max_score and score1 - score2 >= 0
-                    is_score_good = score2 - score1 <= Nba.max_score and score2 - score1 >= 0
+                    is_score_good2 = score1 - score2 <= NBAS.max_score and score1 - score2 >= 0
+                    is_score_good = score2 - score1 <= NBAS.max_score and score2 - score1 >= 0
 
                     # Check if the game time and score is within the specified range
                     if list(games_wanted.values())[ii][0] != 100 and (is_score_good or is_score_good2) and (
-                            Nba.max_time + game_time) > 48:
+                            NBAS.max_time + game_time) > 48:
 
                         # Mark the game as displayed
                         list(games_wanted.values())[ii][0] = 100
@@ -66,8 +67,7 @@ def game():
                         if sound:
                             sound.play()
 
-
-
+#noti()
 while True:
     print("service is running...")
     game()
