@@ -121,7 +121,6 @@ def new_dict(my_dict, choice):
 class NBA(App):
     # Build the App's UI
     def build(self):
-        print(NBAS)
         # Set the time to 0
         self.time = 0
         # Create a layout to hold the widgets
