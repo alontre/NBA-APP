@@ -174,6 +174,11 @@ class NBA(App):
         # Return the main layout
         return self.layout
 
+    def on_start(self):
+        from kivy import platform
+        if platform == "android":
+            self.start_service()
+
     def first_submit(self, button):
         if self.time == 0:
             # Get the chosen games from the text input widget
@@ -257,13 +262,13 @@ class NBA(App):
         is_time_right = int(is_time_right[0]) * 60 + int(is_time_right[1])
 
         # If the game is more than 12 hours away,that mean that he already started,so wait 1 second and go to the game
-        self.start_service()
+        self.on_start()
 
 
     @staticmethod
     def start_service():
         from jnius import autoclass
-        service = autoclass("org.test.nbaBGBeta.ServiceBack_ground")
+        service = autoclass("org.test.nbaBGBeta.ServiceBackground")
         mActivity = autoclass("org.kivy.android.PythonActivity").mActivity
         service.start(mActivity, "")
         return service
