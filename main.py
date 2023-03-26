@@ -168,7 +168,7 @@ class NBA(App):
         self.layout.add_widget(self.submit_button)
 
         # Create a label to display the chosen games
-        self.chosen_games_label = Label(text="chosen games:\n----------------------\n", color='#00FFCE', font_size='20')
+        self.chosen_games_label = Label(text="chosen games:\n--------------------------\n", color='#00FFCE', font_size='16')
         self.layout.add_widget(self.chosen_games_label)
 
         # Return the main layout
@@ -186,16 +186,16 @@ class NBA(App):
                     raise("")
 
                 # Display only the chosen games
-                self.chosen_games_label.text = "chosen games:\n----------------------\n" + str(only_print_some(new_dict(get_games("ere"), self.chosen_games)))
+                self.chosen_games_label.text = "chosen games:\n--------------------------\n" + str(only_print_some(new_dict(get_games("ere"), self.chosen_games)))
 
             except:
                 # Display an error message if the input is invalid
-                self.label3.text = "Please enter the game/s I'd/s\n with a comma separator.\n\n  Error with input try again."
+                self.label3.text = "Please enter the game/s I'd/s\n with a comma separator.\n  Error with input try again."
 
             else:
                 # If the input is valid, update the labels and show the next input widget
                 self.label1.text = ""
-                self.label3.font_size = 20
+                self.label3.font_size = 16
                 self.label3.pos_hint = {"center_x": 0.5, "center_y": 0.85}
                 self.label3.text = "Please enter the point difference\n           (in the first area).\n\n And the time left on the clock" \
                                    "\n           (in the second area)."
@@ -219,7 +219,7 @@ class NBA(App):
             self.max_time = int(self.max_time_input.text) # Store the max time left in the clock as an integer
         except:
             # If there is an exception, display an error message
-            self.label3.font_size = 20
+            self.label3.font_size = 16
             self.label3.pos_hint = {"center_x": 0.5, "center_y": 0.85}
             self.label3.text = "Please enter the point difference\n           (in the first area).\n\n And the time left on the clock" \
                                "\n           (in the second area).\n\n      Error with input, go again."
@@ -235,7 +235,7 @@ class NBA(App):
     def wait_to_the_games(self, games_today):
         global is_time_right
         # Update the label with the chosen game time and points
-        self.chosen_games_label.text = f"\nchosen time:{self.max_time_input.text}       chosen points:{self.games_input.text}"
+        self.chosen_games_label.text = f"\nchosen time:{self.max_time_input.text}\nchosen points:{self.games_input.text}"
 
         # Store the games for the day
         self.games_today = games_today
