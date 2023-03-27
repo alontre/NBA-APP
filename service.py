@@ -1,17 +1,13 @@
-from jnius import autoclass
 from nba_api.live.nba.endpoints import scoreboard
 from kivy.core.audio import SoundLoader
 from time import sleep
-from main import *
+from jnius import autoclass
 
 PythonService = autoclass('org.kivy.android.PythonService')
 PythonService.mService.setAutoRestartService(True)
 
-#def noti():
-#    import plyer
-#    plyer.notification.notify(title="background", message="background service now running...")
-
 def game():
+    print(some)
     # Create a new scoreboard object
     board = scoreboard.ScoreBoard()
 
@@ -23,7 +19,7 @@ def game():
 
     # Print the date of the scoreboard
     # Get the games to display from the games_today attribute of the object
-    games_wanted = NBAS.games_today
+    games_wanted = some[2]
 
     # Iterate through all the games in the scoreboard
     for i in range(len(games["scoreboard"]["games"])):
@@ -52,12 +48,12 @@ def game():
                                 str(score2) + "-" + str(games["scoreboard"]["games"][i]["awayTeam"]["teamName"]))
 
                     # Check if the score difference is within the specified range
-                    is_score_good2 = score1 - score2 <= NBAS.max_score and score1 - score2 >= 0
-                    is_score_good = score2 - score1 <= NBAS.max_score and score2 - score1 >= 0
+                    is_score_good2 = score1 - score2 <= some[1] and score1 - score2 >= 0
+                    is_score_good = score2 - score1 <= some[1] and score2 - score1 >= 0
 
                     # Check if the game time and score is within the specified range
                     if list(games_wanted.values())[ii][0] != 100 and (is_score_good or is_score_good2) and (
-                            NBAS.max_time + game_time) > 48:
+                            some[0] + game_time) > 48:
 
                         # Mark the game as displayed
                         list(games_wanted.values())[ii][0] = 100
@@ -67,8 +63,10 @@ def game():
                         if sound:
                             sound.play()
 
-#noti()
 while True:
+    import pickle
+    with open('mypickle.pk', 'rb') as fi:
+        some = pickle.load(fi)
     print("service is running...")
     game()
     sleep(10)
