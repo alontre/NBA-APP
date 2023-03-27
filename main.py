@@ -6,7 +6,7 @@ from kivy.uix.button import Button
 from kivy.uix.label import Label
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.textinput import TextInput
-
+import pickle
 # Define a function to return only some values of a dictionary
 def only_print_some(array):
     text = ""
@@ -119,8 +119,10 @@ def new_dict(my_dict, choice):
 
 # Create a Kivy App
 class NBA(App):
+    daniel = [0,0,0,0,0]
     # Build the App's UI
     def build(self):
+        self.icon = "nbaicon.png"
         # Set the time to 0
         self.time = 0
         # Create a layout to hold the widgets
@@ -129,14 +131,14 @@ class NBA(App):
         # Create a horizontal layout for the labels
         self.label_layout = BoxLayout(orientation='horizontal')
         # Create three labels with different text
-        self.label1 = Label(text=get_games("first"), font_size='16', color='#00FFCE', pos_hint={"center_x": 0.5, "center_y": 0.25})
+        self.label1 = Label(text=get_games("first"), font_size='30', color='#00FFCE', pos_hint={"center_x": 0.5, "center_y": 0.25})
 
         self.label_layout.add_widget(self.label1)
 
         self.label_layout_two = BoxLayout(orientation='horizontal')
 
         self.label3 = Label(text="Please enter the game/s I'd/s\n with a comma separator.",
-                            font_size='16', color='#00FFCE', pos_hint={"center_x": 0.5, "center_y": 0.45})
+                            font_size='30', color='#00FFCE', pos_hint={"center_x": 0.5, "center_y": 0.45})
 
         self.label_layout_two.add_widget(self.label3)
 
@@ -164,15 +166,16 @@ class NBA(App):
         self.layout.add_widget(self.submit_button)
 
         # Create a label to display the chosen games
-        self.chosen_games_label = Label(text="chosen games:\n--------------------------\n", color='#00FFCE', font_size='16')
+        self.chosen_games_label = Label(text="chosen games:\n--------------------------\n", color='#00FFCE', font_size='30')
         self.layout.add_widget(self.chosen_games_label)
 
         # Return the main layout
         return self.layout
 
     def on_start(self):
-        global Z
+        import plyer
         from kivy import platform
+        plyer.notification.notify(title="background", message="background service now running...")
         if platform == "android":
             self.start_service()
 
@@ -197,7 +200,7 @@ class NBA(App):
             else:
                 # If the input is valid, update the labels and show the next input widget
                 self.label1.text = ""
-                self.label3.font_size = 16
+                self.label3.font_size = 30
                 self.label3.pos_hint = {"center_x": 0.5, "center_y": 0.85}
                 self.label3.text = "Please enter the point difference\n           (in the first area).\n\n And the time left on the clock" \
                                    "\n           (in the second area)."
@@ -214,11 +217,16 @@ class NBA(App):
     def second_submit(self):
         print(self.time) # print the current time
         try:
-            if (not (self.games_input.text.isdigit()) and int(self.games_input.text > 0) or (not (self.max_time_input.text.isdigit()) and int(self.self.max_time_input.text > 0))):
+            if (not (self.games_input.text.isdigit()) and int(self.games_input.text > 0) or (not (self.max_time_input.text.isdigit()) and int(self.max_time_input.text > 0))):
                 # Check if the input for point difference and time is a positive integer, and if not raise an exception
                 raise("")
+            NBA.daniel[0] = 12345
             self.max_score = int(self.games_input.text) # Store the max point difference as an integer
+            NBA.daniel[1] = self.max_score
+            copy(1)
             self.max_time = int(self.max_time_input.text) # Store the max time left in the clock as an integer
+            NBA.daniel[2] = self.max_time
+            copy(2)
         except:
             # If there is an exception, display an error message
             self.label3.font_size = 16
@@ -237,11 +245,12 @@ class NBA(App):
     def wait_to_the_games(self, games_today):
         global is_time_right,needs
         # Update the label with the chosen game time and points
-        self.chosen_games_label.text = f"\nchosen time:{self.max_time_input.text}\nchosen points:{self.games_input.text}"
+        self.chosen_games_label.text = "chosen games:\n--------------------------\n" + str(only_print_some(new_dict(get_games("ere"), self.chosen_games))) + f"\nchosen time:{self.max_time_input.text}\nchosen points:{self.games_input.text}"
 
         # Store the games for the day
         self.games_today = games_today
-
+        NBA.daniel[0] = games_today
+        copy(0)
         # Update the label to indicate that we are waiting for the games to begin
         self.label3.text = "wait for the games to began"
 
@@ -259,8 +268,10 @@ class NBA(App):
         is_time_right = int(is_time_right[0]) * 60 + int(is_time_right[1])
 
         # If the game is more than 12 hours away,that mean that he already started,so wait 1 second and go to the game
+        with open('mypickle.pk', 'wb') as fi:
+            # dump your data into the file
+            pickle.dump(some, fi)
         self.on_start()
-
 
     @staticmethod
     def start_service():
@@ -270,6 +281,11 @@ class NBA(App):
         service.start(mActivity, "")
         return service
 
+def copy(i):
+    global some
+    some.append(NBAS.daniel[i])
+
+some = []
 if __name__ == "__main__":
     NBAS = NBA()
     NBAS.run()
