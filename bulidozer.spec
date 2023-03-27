@@ -1,10 +1,10 @@
 [app]
 
 # (str) Title of your application
-title = nbaBGBeta
+title = nbaBeta
 
 # (str) Package name
-package.name = nbaBGBeta
+package.name = service
 
 # (str) Package domain (needed for android/ios packaging)
 package.domain = org.test
@@ -13,10 +13,10 @@ package.domain = org.test
 source.dir = .
 
 # (list) Source files to include (let empty to include all the files)
-source.include_exts = py,png,jpg,kv,atlas,mp3
+source.include_exts = py,png,jpg,kv,atlas,mp3,pk
 
 # (list) List of inclusions using pattern matching
-source.include_patterns = assets/*,ffd.mp3/*.png
+source.include_patterns = assets/*,ffd.mp3
 
 # (list) Source files to exclude (let empty to not exclude anything)
 #source.exclude_exts = spec
@@ -37,23 +37,23 @@ version = 0.1
 
 # (list) Application requirements
 # comma separated e.g. requirements = sqlite3,kivy
-requirements = python3,kivy,nba_api,python-dateutil,requests,urllib3,charset-normalizer==2.1.1,pillow
+requirements = python3,kivy,nba_api,python-dateutil,requests,urllib3,charset-normalizer==2.1.1,pyjnius,six,idna,https://github.com/kivy/plyer/archive/refs/heads/master.zip,pillow
 
 # (str) Custom source folders for requirements
 # Sets custom source for any requirements with recipes
 # requirements.source.kivy = ../../kivy
 
 # (str) Presplash of the application
-presplash.filename = %(source.dir)s/data/nbaasplash.png
+presplash.filename = %(source.dir)s/nbaasplash.png
 
 # (str) Icon of the application
-icon.filename = %(source.dir)s/data/icon.png
+icon.filename = %(source.dir)s/nbaIcon.png
 
 # (str) Supported orientation (one of landscape, sensorLandscape, portrait or all)
 orientation = portrait
 
 # (list) List of service to declare
-services = Back_ground:service.py
+services = Background:service.py
 
 #
 # OSX Specific
@@ -428,3 +428,4 @@ warn_on_root = 1
 #    Then, invoke the command line with the "demo" profile:
 #
 #buildozer --profile demo android debug
+ycx
