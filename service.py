@@ -1,10 +1,15 @@
+import os
+
+os.environ["KIVY_AUDIO"] = "ffpyplayer"
+
 from nba_api.live.nba.endpoints import scoreboard
-from kivy.core.audio import SoundLoader
 from time import sleep
 from jnius import autoclass
 
 PythonService = autoclass('org.kivy.android.PythonService')
 PythonService.mService.setAutoRestartService(True)
+
+
 
 def game():
     print(some)
@@ -59,9 +64,18 @@ def game():
                         list(games_wanted.values())[ii][0] = 100
 
                         # Play a sound
-                        sound = SoundLoader.load('ffd.mp3')
-                        if sound:
-                            sound.play()
+                        MediaPlayer = autoclass('android.media.MediaPlayer')
+                        media_player = MediaPlayer()
+                        media_player.setDataSource('ffd.mp3')
+                        media_player.prepare()
+                        media_player.start()
+
+                        open('mypickle.pk', 'w').close()
+
+                        # Wait until the mp3 is done playing
+                        while media_player.isPlaying():
+                            sleep(1)
+
 
 while True:
     import pickle
