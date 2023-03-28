@@ -264,7 +264,8 @@ class NBA(App):
         print(is_time_right)
         is_time_right = str(is_time_right).split(":")
         is_time_right = int(is_time_right[0]) * 60 + int(is_time_right[1])
-
+        NBA.daniel[4] = is_time_right
+        copy(4)
         # If the game is more than 12 hours away,that mean that he already started,so wait 1 second and go to the game
         with open('mypickle.pk', 'wb') as fi:
             # dump your data into the file
@@ -282,8 +283,9 @@ class NBA(App):
 def copy(i):
     global some
     some.append(NBAS.daniel[i])
-
+    print(some)
 some = []
+
 if __name__ == "__main__":
     NBAS = NBA()
     NBAS.run()
