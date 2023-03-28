@@ -173,9 +173,7 @@ class NBA(App):
         return self.layout
 
     def on_start(self):
-        #import plyer
         from kivy import platform
-        #plyer.notification.notify(title="background", message="background service now running...")
         if platform == "android":
             self.start_service()
 
