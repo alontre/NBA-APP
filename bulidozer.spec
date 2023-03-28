@@ -37,7 +37,7 @@ version = 0.1
 
 # (list) Application requirements
 # comma separated e.g. requirements = sqlite3,kivy
-requirements = python3,kivy,nba_api,python-dateutil,requests,urllib3,charset-normalizer==2.1.1,pyjnius,six,idna,https://github.com/kivy/plyer/archive/refs/heads/master.zip,pillow
+requirements = python3,kivy,nba_api,ffpyplayer,python-dateutil,requests,urllib3,charset-normalizer==2.1.1,pyjnius,six,idna,https://github.com/kivy/plyer/archive/refs/heads/master.zip,pillow
 
 # (str) Custom source folders for requirements
 # Sets custom source for any requirements with recipes
