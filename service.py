@@ -76,9 +76,13 @@ def game():
                         while media_player.isPlaying():
                             sleep(1)
 
-
+import pickle
+a = 0
 while True:
-    import pickle
+    if a == 0:
+        a = 1
+        for i in range(some[3]):
+            sleep(60)
     with open('mypickle.pk', 'rb') as fi:
         some = pickle.load(fi)
     print("service is running...")
